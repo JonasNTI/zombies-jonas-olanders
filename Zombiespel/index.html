@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://koda.nu/simple.js">
+        updatesPerSecond = 60;
+
+            // Variables
+            var player = {x: totalWidth/2, y: totalHeight/2, speed: 8}; // Variable for player spawn location + speed
+            var zombies = []; // List for the zombies(ghosts)
+            var i = 0; // Index for zombie list
+            var partOfaSecond = 0; // 60:th of a second
+            var sec = 0; // Second
+            var min = 0; // Minute
+            var hr = 0; // Hour
+            var space = 0; // Function with space
+
+            // Creating the zombies (ghosts)
+            while (i < 5){
+                zombies.push({x: random(totalWidth),
+                        y: random(totalHeight),
+                        size: 20,
+                        speed: random(1,4)});
+
+                i += 1;
+            }
+
+        function update(){
+            // Creating the game area
+            fill("red");
+            rectangle(10, 10 , totalWidth-20, totalHeight-20, "black");
+
+            // Picture at player location
+            picture(player.x-40, player.y-40, 'Bilder/Pac-man.png');
+
+            // Keeping track of time
+            partOfaSecond += 1;
+            if (partOfaSecond == 60){ sec += 1; partOfaSecond = 0; }
+            if (sec == 60){ min += 1; sec = 0; }
+            if (min == 60){ hr += 1; min == 0 }
+
+            // Counting seconds
+            if (sec < 10){ text(160,80,30, ':0' + sec, "blue") }
+            else { text(160,80,30, ":" + sec, "blue") }
+
+            // Counting minutes
+            if (min < 10){ text(90,80,30, ':0' + min, "blue") }
+            else { text(90,80,30, ':' + min, "blue") }
+
+            // Counting hours
+            if (hr < 10){ text(40,80,30, '0' + hr, "blue") }
+            else { text(40,80,30, hr, "blue") }
+
+            // Movement controls for player
+            if (keyboard.w) { player.y -= player.speed; }
+            if (keyboard.a) { player.x -= player.speed; }
+            if (keyboard.s) { player.y += player.speed; }
+            if (keyboard.d) { player.x += player.speed; }
+
+            // Adding the red walls as boundaries for the player
+            if (player.x >= totalWidth-52){ player.x = totalWidth-53; }
+            if (player.x <= 47){ player.x = 48; }
+            if (player.y >= totalHeight-53){ player.y = totalHeight-54; }
+            if (player.y <= 48){ player.y = 49; }
+
+            // Spacefunction
+            if (keyboard.space) { space = 240 }
+            if (space > 0) { space-- }
+            text(40,120,40, space, 'red');
+
+            // Giving the zombies visuals and making them all chase the player / run away from the player
+            var i = 0;
+            while (i < 5){
+                var zombie = zombies[i];
+                picture(zombie.x-25, zombie.y-20, 'Bilder/Pac-man_Ghost_blue.png');
+
+                // Maximum distance for the zombie to kill the player
+                var maxDistance = 50;
+
+                // If space equals 0, zombies chase the player
+                if (space == 0) {
+                    if (zombie.x < player.x) { zombie.x += zombie.speed; }
+                    if (zombie.x > player.x) { zombie.x -= zombie.speed; }
+                    if (zombie.y < player.y) { zombie.y += zombie.speed; }
+                    if (zombie.y > player.y) { zombie.y -= zombie.speed; } 
+                }
+
+                // If space is larger than 0, zombies run from the player
+                if (space > 0) {
+                    if (zombie.x < player.x) { zombie.x -= zombie.speed; }
+                    if (zombie.x > player.x) { zombie.x += zombie.speed; }
+                    if (zombie.y < player.y) { zombie.y -= zombie.speed; }
+                    if (zombie.y > player.y) { zombie.y += zombie.speed; }
+                //    if (distance(zombie, player) < maxDistance){    // Tried making the zombies dissappear when the player got too close
+                //        zombies.pop();                              // Not working as intended
+                //    }
+                }
+
+                // Adding the red walls as boundaries for the zombies
+                if (zombie.x >= totalWidth-33){ zombie.x = totalWidth-34; }
+                if (zombie.x <= 33){ zombie.x = 34; }
+                if (zombie.y >= totalHeight-37){ zombie.y = totalHeight-38; }
+                if (zombie.y <= 29){ zombie.y = 30; }
+
+                // Stopping game if any of the zombies gets too close to the player
+                if (distance(zombie, player) < maxDistance && space == 0){
+                alert("Game over!");
+                stopUpdate();
+            }
+                i += 1;
+            }
+        }
+      </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
